@@ -83,23 +83,57 @@ if (class_exists("GFForms")) {
 
         public function filter_form_button_settings($form_settings, $form) {
 
-            $form_button_value = rgars( $form, 'button/type' );
+            $subsetting_open  = '
+            <td colspan="2" class="gf_sub_settings_cell">
+                <div class="gf_animate_sub_settings">
+                    <table>
+                        <tr>';
+            $subsetting_close = '
+                        </tr>
+                    </table>
+                </div>
+            </td>';
 
-            if ( $form_button_value === 'html' ) {
-                $html_button_checked = 'checked="checked"';
-                $html_style_display = '';
-            } else {
-                $html_button_checked = '';
+            $form_button_type     = rgars( $form, 'button/type' );
+            $text_button_checked  = '';
+            $image_button_checked = '';
+            $html_button_checked = '';
+            $text_style_display   = '';
+            $image_style_display  = '';
+            $html_style_display = '';
+            if ( $form_button_type == 'text' ) {
+                $text_button_checked = 'checked="checked"';
+                $image_style_display = 'display:none;';
                 $html_style_display = 'display:none;';
+            } else if ( $form_button_type == 'image' ) {
+                $image_button_checked = 'checked="checked"';
+                $text_style_display   = 'display:none;';
+                $html_style_display = 'display:none;';
+            } else if ( $form_button_type == 'html' ) {
+                $html_button_checked = 'checked="checked"';
+                $image_style_display = 'display:none;';
+                $text_style_display   = 'display:none;';
             }
 
-            $form_button_type = $form_settings['Form Button']['form_button_type'];
+            // form button radio buttons
+            $form_settings['Form Button']['form_button_type'] = '
+            <tr>
+                <th>
+                    ' . __( 'Input type', 'gravityforms' ) . '
+                </th>
+                <td>
 
-            $form_button_type_array = explode("</label>",$form_button_type);
+                    <input type="radio" id="form_button_text" name="form_button" value="text" onclick="GFSBToggleButton();" ' . $text_button_checked . ' />
+                    <label for="form_button_text" class="inline">' .
+                __( 'Text', 'gravityforms' ) .
+                '</label>
 
-            $form_button_type = str_replace( 'ToggleButton', 'GFSBToggleButton', str_replace($form_button_type_array[2], '', $form_button_type) );
+                &nbsp;&nbsp;
 
-            $form_settings['Form Button']['form_button_type'] = $form_button_type . '
+                <input type="radio" id="form_button_image" name="form_button" value="image" onclick="GFSBToggleButton();" ' . $image_button_checked . ' />
+                    <label for="form_button_image" class="inline">' .
+                __( 'Image', 'gravityforms' ) . '</label>
+
                 &nbsp;&nbsp;
                 <input type="radio" id="form_button_html" name="form_button" value="html" onclick="GFSBToggleButton();" ' . $html_button_checked . ' />
                 <label for="form_button_html" class="inline">' .
@@ -108,40 +142,52 @@ if (class_exists("GFForms")) {
                 </td>
             </tr>';
 
-            $form_button_image_path = $form_settings['Form Button']['form_button_image_path'];
+            //form button text
+            $form_settings['Form Button']['form_button_text'] = $subsetting_open . '
+            <tr id="form_button_text_setting" class="child_setting_row" style="' . $text_style_display . '">
+                <th>
+                    ' .
+                __( 'Button text', 'gravityforms' ) . ' ' .
+                gform_tooltip( 'form_button_text', '', true ) .
+                '
+            </th>
+            <td>
+                <input type="text" id="form_button_text_input" name="form_button_text_input" class="fieldwidth-3" value="' . esc_attr( rgars( $form, 'button/text' ) ) . '" />
+                </td>
+            </tr>';
 
-            $form_button_image_path = str_replace("</table>", "", $form_button_image_path);
-            $form_button_image_path = str_replace("</div>", "", $form_button_image_path);
-            $form_button_image_path = substr($form_button_image_path, 0, -5);
-
-            $form_settings['Form Button']['form_button_image_path'] = $form_button_image_path . '<tr id="form_button_html_setting" class="child_setting_row" style="' . $html_style_display . '">
-                                <th>
-                                    '. __( 'HTML Button Text', 'gravityforms' ) .' <a href="#"" onclick="return false;"" class="gf_tooltip tooltip tooltip_form_button_image" title="&lt;h6&gt;Form Button Text&lt;/h6&gt;Enter the text you would like to appear on the form submit button. HTML tags are allowed."><i class="fa fa-question-circle"></i></a>
-                                </th>
-                                <td>
-                                    <input type="text" id="form_button_html_input" name="form_button_html_input" class="fieldwidth-3" value="' . esc_attr( rgars( $form, 'button/html' ) ) . '" />
-                                </td>
-                            </tr>
-                        </tr>
-                    </table>
-                </div>
-            </td>';
+            // form button image path and html5 button input
+            $form_settings['Form Button']['form_button_image_path'] = '
+            <tr id="form_button_image_path_setting" class="child_setting_row" style="' . $image_style_display . '">
+                <th>
+                        ' .
+                    __( 'Button image path', 'gravityforms' ) . '  ' .
+                    gform_tooltip( 'form_button_image', '', true ) .
+                    '
+                </th>
+                <td>
+                    <input type="text" id="form_button_image_url" name="form_button_image_url" class="fieldwidth-3" value="' . esc_attr( rgars( $form, 'button/imageUrl' ) ) . '" />
+                </td>
+            </tr>
+            <tr id="form_button_html_setting" class="child_setting_row" style="' . $html_style_display . '">
+                <th>
+                    '. __( 'HTML Button Text', 'gravityforms' ) .' <a href="#"" onclick="return false;"" class="gf_tooltip tooltip tooltip_form_button_image" title="&lt;h6&gt;Form Button Text&lt;/h6&gt;Enter the text you would like to appear on the form submit button. HTML tags are allowed."><i class="fa fa-question-circle"></i></a>
+                </th>
+                <td>
+                    <input type="text" id="form_button_html_input" name="form_button_html_input" class="fieldwidth-3" value="' . esc_attr( rgars( $form, 'button/html' ) ) . '" />
+                </td>
+            </tr>' . $subsetting_close;
 
         	return $form_settings;
         }
 
         public function save_form_button_settings( $form ) {
-
-            // var_dump( $form );
-            // $form['button']['type'] = rgpost( 'form_button' ) == 'html' ? rgpost( 'form_button_html_input' ) : '';
               
-            $form['button']['type'] = rgpost( 'form_button' );
+            $form['button']['type']     = rgpost( 'form_button' );
+            $form['button']['text']     = rgpost( 'form_button' ) == 'text' ? rgpost( 'form_button_text_input' ) : '';
+            $form['button']['imageUrl'] = rgpost( 'form_button' ) == 'image' ? rgpost( 'form_button_image_url' ) : '';
+            $form['button']['html']     = rgpost( 'form_button' ) == 'html' ? rgpost( 'form_button_html_input' ) : '';
 
-            if ( $form['button']['type'] === 'html' ) {
-                $form['button']['html'] = rgpost( 'form_button_html_input' );
-            }
-
-            //var_dump($form);
             return $form;
         }
 
