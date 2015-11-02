@@ -36,51 +36,6 @@ if (class_exists("GFForms")) {
         protected $_title = 'Customize Submit Button for Gravity Forms';
         protected $_short_title = 'GF Custom Submit Button';
 
-        public function plugin_page() {
-            ?>
-            This page appears in the Forms menu
-            <?php
-        }
-
-        public function form_settings_fields($form) {
-            return array(
-                array(
-                    'title'  => 'Simple Form Settings',
-                    'fields' => array(
-                        array(
-                            'label'   => 'My checkbox',
-                            'type'    => 'checkbox',
-                            'name'    => 'enabled',
-                            'tooltip' => 'This is the tooltip',
-                            'choices' => array(
-                                array(
-                                    'label' => 'Enabled',
-                                    'name'  => 'enabled',
-                                )
-                            )
-                        )
-                    )
-                )
-            );
-        }
-
-        public function plugin_settings_fields() {
-            return array(
-                array(
-                    'title'  => 'Simple Add-On Settings',
-                    'fields' => array(
-                        array(
-                            'name'    => 'textbox',
-                            'tooltip' => 'This is the tooltip',
-                            'label'   => 'This is the label',
-                            'type'    => 'text',
-                            'class'   => 'small'
-                        )
-                    )
-                )
-            );
-        }
-
         public function filter_form_button_settings($form_settings, $form) {
 
             $subsetting_open  = '
@@ -191,14 +146,21 @@ if (class_exists("GFForms")) {
             return $form;
         }
 
-        public function init_admin() {
+        public function disable_form_settings_sanitization() {
+            return true;
+        }
 
+        public function init_admin() {
             // add my own options to the Gforms form settings
         	add_filter('gform_form_settings', array( $this, 'filter_form_button_settings' ), 20, 2  );
 
-            // save my custom setting to the DB
+            // save custom setting to the DB
             add_filter('gform_pre_form_settings_save', array( $this, 'save_form_button_settings' ), 20, 2  );
         
+            // disable sanitization which prevents custom 
+            // form settings from being saved
+            add_filter('gform_disable_form_settings_sanitization', array( $this, 'disable_form_settings_sanitization' ) );
+
             wp_enqueue_script( 
                 'gform-custom-submit-button', 
                 plugin_dir_url( __FILE__ ) . 'js/scripts.js', 
@@ -206,6 +168,31 @@ if (class_exists("GFForms")) {
                 '1.0.0', 
                 true 
             );
+        }
+
+        public function filter_form_button_markup( $button_input, $form ) {
+
+            // check to see if HTML button is selected
+            if ( $form['button']['type'] == 'html') {
+
+                if ( $form['button']['html'] ) {
+                    $text = $form['button']['html'];
+                } else {
+                    $text = 'Submit';
+                }
+
+                $button_input = str_replace( 'input', 'button', $button_input );
+                $button_input = str_replace( '/', '', $button_input );
+                $button_input .= $text . "</button>";
+            }
+
+            return $button_input;
+        }
+
+        public function init_frontend() {
+
+            // change button markup
+            add_filter( 'gform_submit_button', array( $this, 'filter_form_button_markup' ), 20, 3 );
         }
 
 	}
