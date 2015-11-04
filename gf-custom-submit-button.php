@@ -107,7 +107,7 @@ if (class_exists("GFForms")) {
             <tr id="form_button_text_setting" class="child_setting_row" style="' . $text_style_display . '">
                 <th>
                     ' .
-                __( 'Button text', 'gravityforms' ) . ' ' .
+                __( 'Button text', 'gf-custom-submit-button' ) . ' ' .
                 gform_tooltip( 'form_button_text', '', true ) .
                 '
             </th>
@@ -121,7 +121,7 @@ if (class_exists("GFForms")) {
             <tr id="form_button_image_path_setting" class="child_setting_row" style="' . $image_style_display . '">
                 <th>
                         ' .
-                    __( 'Button image path', 'gravityforms' ) . '  ' .
+                    __( 'Button image path', 'gf-custom-submit-button' ) . '  ' .
                     gform_tooltip( 'form_button_image', '', true ) .
                     '
                 </th>
@@ -131,7 +131,10 @@ if (class_exists("GFForms")) {
             </tr>
             <tr id="form_button_html_setting" class="child_setting_row" style="' . $html_style_display . '">
                 <th>
-                    '. __( 'HTML Button Text', 'gravityforms' ) .' <a href="#"" onclick="return false;"" class="gf_tooltip tooltip tooltip_form_button_image" title="&lt;h6&gt;Form Button Text&lt;/h6&gt;Enter the text you would like to appear on the form submit button. HTML tags are allowed."><i class="fa fa-question-circle"></i></a>
+                    <label for="form_button_html_input" style="display:block;">' . 
+                        __( 'HTML Button Text', 'gf-custom-submit-button' ) . ' ' .
+                        gform_tooltip( 'form_button_html_input', '', true ) .
+                    '</label>
                 </th>
                 <td>
                     <input type="text" id="form_button_html_input" name="form_button_html_input" class="fieldwidth-3" value="' . esc_attr( rgars( $form, 'button/html' ) ) . '" />
@@ -139,11 +142,11 @@ if (class_exists("GFForms")) {
             </tr>' . $subsetting_close;
 
             // add CSS Button Class field
-            $form_settings['Form Button']['form_button_image_path'] . == '
+            $form_settings['Form Button']['form_button_image_path'] .= '
             <tr>
                 <th>
                     <label for="button_css_class" style="display:block;">' .
-                __( 'CSS Class Name', 'gravityforms' ) . ' ' .
+                __( 'Button CSS Classes', 'gf-custom-submit-button' ) . ' ' .
                 gform_tooltip( 'button_css_class', '', true ) .
                 '</label>
             </th>
@@ -152,9 +155,10 @@ if (class_exists("GFForms")) {
                 </td>
             </tr>';
 
-            // lets add the CSS class stuff
+            // the question is how am I going to populate the above guy...with the current CSS classes
+            // lets see how those CSS classes are generated on the front end 
 
-            // var_dump( $form_settings );
+           // var_dump( $form_settings );
 
         	return $form_settings;
         }
@@ -174,8 +178,8 @@ if (class_exists("GFForms")) {
         }
 
         public function add_tooltips( $tooltips ) {
-            $tooltips['feature_1'] = 'Enter the text you would like to appear on the form submit button. HTML tags are allowed.';
-            $tooltips['feature_2'] = 'Tooltip for feature 2';
+            $tooltips['form_button_html_input'] = '<h6>' . __( 'Form HTML Button Text', 'gf-custom-submit-button' ) . '</h6>' . __( 'Enter the text you would like to appear on the form submit button. HTML tags are allowed.', 'gf-custom-submit-button' );
+            $tooltips['button_css_class'] = '<h6>' . __( 'Form Button CSS Classes', 'gf-custom-submit-button' ) . '</h6>' . __( 'These are the CSS classes that are attached to the form button. You can change or overwrite them here.', 'gf-custom-submit-button' );
             return $tooltips;
         }
 
@@ -183,8 +187,8 @@ if (class_exists("GFForms")) {
             // add my own options to the Gforms form settings
         	add_filter('gform_form_settings', array( $this, 'filter_form_button_settings' ), 20, 2  );
 
-            // add tooltips for new admin text
-            // add_filter( 'gform_tooltips', 'add_tooltips' );
+            // add tooltips for new form settings inputs
+            add_filter( 'gform_tooltips', array( $this, 'add_tooltips' ) );
 
             // save custom setting to the DB
             add_filter('gform_pre_form_settings_save', array( $this, 'save_form_button_settings' ), 20, 2  );
