@@ -38,16 +38,21 @@ if (class_exists("GFForms")) {
 
         public function filter_form_button_settings($form_settings, $form) {
 
+            // need to add a text field for CSS classes here too and I need to populate it
+            // with the CSS classes being used on the button...hmmm, that's the difficult part...
+
             $subsetting_open  = '
-            <td colspan="2" class="gf_sub_settings_cell">
-                <div class="gf_animate_sub_settings">
-                    <table>
-                        <tr>';
+            <tr>
+                <td colspan="2" class="gf_sub_settings_cell">
+                    <div class="gf_animate_sub_settings">
+                        <table>
+                            <tr>';
             $subsetting_close = '
-                        </tr>
-                    </table>
-                </div>
-            </td>';
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>';
 
             $form_button_type     = rgars( $form, 'button/type' );
             $text_button_checked  = '';
@@ -133,6 +138,24 @@ if (class_exists("GFForms")) {
                 </td>
             </tr>' . $subsetting_close;
 
+            // add CSS Button Class field
+            $form_settings['Form Button']['form_button_image_path'] . == '
+            <tr>
+                <th>
+                    <label for="button_css_class" style="display:block;">' .
+                __( 'CSS Class Name', 'gravityforms' ) . ' ' .
+                gform_tooltip( 'button_css_class', '', true ) .
+                '</label>
+            </th>
+            <td>
+                <input type="text" id="button_css_class" name="button_css_class" class="fieldwidth-3" value="' . esc_attr( rgar( $form, 'cssClass' ) ) . '" />
+                </td>
+            </tr>';
+
+            // lets add the CSS class stuff
+
+            // var_dump( $form_settings );
+
         	return $form_settings;
         }
 
@@ -150,9 +173,18 @@ if (class_exists("GFForms")) {
             return true;
         }
 
+        public function add_tooltips( $tooltips ) {
+            $tooltips['feature_1'] = 'Enter the text you would like to appear on the form submit button. HTML tags are allowed.';
+            $tooltips['feature_2'] = 'Tooltip for feature 2';
+            return $tooltips;
+        }
+
         public function init_admin() {
             // add my own options to the Gforms form settings
         	add_filter('gform_form_settings', array( $this, 'filter_form_button_settings' ), 20, 2  );
+
+            // add tooltips for new admin text
+            // add_filter( 'gform_tooltips', 'add_tooltips' );
 
             // save custom setting to the DB
             add_filter('gform_pre_form_settings_save', array( $this, 'save_form_button_settings' ), 20, 2  );
