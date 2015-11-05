@@ -1,7 +1,7 @@
 <?php 
 /**
  * Plugin Name: Customize Submit Button for Gravity Forms
- * Description: Change the Gravity Forms submit button text or add CSS classes to it using this plugin
+ * Description: Lets you customize the submit button in Gravity Forms by changing its CSS classes, switching it to a button element and adding HTML inside said button element 
  * Version: 1.0.0
  * Author: Ollie Murphy
  * Author URI: https://github.com/omurphy27
@@ -15,16 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-// extend the gravity forms add-on framework
-
-// initialize the class
-
-// define my custom functionality and admin panels
-
 if (class_exists("GFForms")) {
 
-	// this just requires the addon framework class file basically
-	// just includes the necessary file
 	GFForms::include_addon_framework();
 
 	Class GFCustomSubmitButton extends GFAddOn {
@@ -38,8 +30,15 @@ if (class_exists("GFForms")) {
 
         public function filter_form_button_settings($form_settings, $form) {
 
-            // need to add a text field for CSS classes here too and I need to populate it
-            // with the CSS classes being used on the button...hmmm, that's the difficult part...
+            $button_css = $form['button']['button_css_class'];
+
+            // find CSS classes being used on submit button
+            if ( empty( $button_css ) ) {
+                $button_css = 'gform_button button';
+                if ( $form['button']['type'] == 'image' ) {
+                    $button_css = 'gform_button gform_image_button';
+                } 
+            }
 
             $subsetting_open  = '
             <tr>
@@ -146,19 +145,14 @@ if (class_exists("GFForms")) {
             <tr>
                 <th>
                     <label for="button_css_class" style="display:block;">' .
-                __( 'Button CSS Classes', 'gf-custom-submit-button' ) . ' ' .
+                __( 'Submit Button CSS Classes', 'gf-custom-submit-button' ) . ' ' .
                 gform_tooltip( 'button_css_class', '', true ) .
                 '</label>
             </th>
             <td>
-                <input type="text" id="button_css_class" name="button_css_class" class="fieldwidth-3" value="' . esc_attr( rgar( $form, 'cssClass' ) ) . '" />
+                <input type="text" id="button_css_class" name="button_css_class" class="fieldwidth-3" value="' . $button_css . '" />
                 </td>
             </tr>';
-
-            // the question is how am I going to populate the above guy...with the current CSS classes
-            // lets see how those CSS classes are generated on the front end 
-
-           // var_dump( $form_settings );
 
         	return $form_settings;
         }
@@ -170,6 +164,13 @@ if (class_exists("GFForms")) {
             $form['button']['imageUrl'] = rgpost( 'form_button' ) == 'image' ? rgpost( 'form_button_image_url' ) : '';
             $form['button']['html']     = rgpost( 'form_button' ) == 'html' ? rgpost( 'form_button_html_input' ) : '';
 
+            $button_css = rgpost( 'button_css_class' );
+            if ( $button_css == 'gform_button button' || $button_css == 'gform_button gform_image_button') {
+                $button_css = '';
+            }
+
+            $form['button']['button_css_class'] = strip_tags( str_replace(array('"', "'"), '', $button_css) );
+
             return $form;
         }
 
@@ -179,24 +180,24 @@ if (class_exists("GFForms")) {
 
         public function add_tooltips( $tooltips ) {
             $tooltips['form_button_html_input'] = '<h6>' . __( 'Form HTML Button Text', 'gf-custom-submit-button' ) . '</h6>' . __( 'Enter the text you would like to appear on the form submit button. HTML tags are allowed.', 'gf-custom-submit-button' );
-            $tooltips['button_css_class'] = '<h6>' . __( 'Form Button CSS Classes', 'gf-custom-submit-button' ) . '</h6>' . __( 'These are the CSS classes that are attached to the form button. You can change or overwrite them here.', 'gf-custom-submit-button' );
+            $tooltips['button_css_class'] = '<h6>' . __( 'Form Button CSS Classes', 'gf-custom-submit-button' ) . '</h6>' . __( 'These are the CSS classes that are attached to the form submit button. You can change or overwrite them here.', 'gf-custom-submit-button' );
             return $tooltips;
         }
 
         public function init_admin() {
-            // add my own options to the Gforms form settings
+            // add plugin options to the Gforms form settings
         	add_filter('gform_form_settings', array( $this, 'filter_form_button_settings' ), 20, 2  );
 
-            // add tooltips for new form settings inputs
+            // add tooltips for new plugin options
             add_filter( 'gform_tooltips', array( $this, 'add_tooltips' ) );
 
             // save custom setting to the DB
             add_filter('gform_pre_form_settings_save', array( $this, 'save_form_button_settings' ), 20, 2  );
         
-            // disable sanitization which prevents custom 
-            // form settings from being saved
+            // disable sanitization which prevents custom form settings from being saved
             add_filter('gform_disable_form_settings_sanitization', array( $this, 'disable_form_settings_sanitization' ) );
 
+            // enqueue plugin JS
             wp_enqueue_script( 
                 'gform-custom-submit-button', 
                 plugin_dir_url( __FILE__ ) . 'js/scripts.js', 
@@ -220,6 +221,12 @@ if (class_exists("GFForms")) {
                 $button_input = str_replace( 'input', 'button', $button_input );
                 $button_input = str_replace( '/', '', $button_input );
                 $button_input .= $text . "</button>";
+            }
+
+            // potential < PHP 5.4 error here - be sure to check
+            if ( isset( $form['button']['button_css_class'] ) && !empty( $form['button']['button_css_class'] ) ) {
+                $button_css = $form['button']['button_css_class'];
+                $button_input = preg_replace("/class='[^']*'/", "class='" . $button_css . "'", $button_input);
             }
 
             return $button_input;
