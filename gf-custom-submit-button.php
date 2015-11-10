@@ -32,6 +32,26 @@ function GFCSB_Bootstrap() {
             protected $_title = 'Customize Submit Button for Gravity Forms';
             protected $_short_title = 'GF Custom Submit Button';
 
+            public function init() {  
+                parent::init();            
+                register_deactivation_hook( __FILE__, array( $this, 'gfcsb_deactivate' ) );
+            }
+
+            public function gfcsb_deactivate() {
+
+                // fetch all forms
+                $forms = GFFormsModel::get_forms();
+
+                // update button type to 'text' default if 'html' value is still selected when deactivated
+                foreach ( $forms as $form ) {
+                    $form_meta = GFFormsModel::get_form_meta( $form->id );
+                    if ( $form_meta['button']['type'] == 'html' ) {
+                        $form_meta['button']['type'] = 'text';
+                        GFFormsModel::update_form_meta( $form->id, $form_meta);
+                    }
+                }
+            }
+
             public function return_button_css( $form ) {
                 if ( $form['button']['type'] == 'image' ) {
                     return 'gform_button gform_image_button';
@@ -106,7 +126,7 @@ function GFCSB_Bootstrap() {
                     &nbsp;&nbsp;
                     <input type="radio" id="form_button_html" name="form_button" value="html" onclick="GFSBToggleButton();" ' . $html_button_checked . ' />
                     <label for="form_button_html" class="inline">' .
-                    __( 'Button', 'gravityforms' ) . '</label>
+                    __( 'Button', 'gf-custom-submit-button' ) . '</label>
 
                     </td>
                 </tr>';
@@ -116,7 +136,7 @@ function GFCSB_Bootstrap() {
                 <tr id="form_button_text_setting" class="child_setting_row" style="' . $text_style_display . '">
                     <th>
                         ' .
-                    __( 'Button text', 'gf-custom-submit-button' ) . ' ' .
+                    __( 'Button text', 'gravityforms' ) . ' ' .
                     gform_tooltip( 'form_button_text', '', true ) .
                     '
                 </th>
@@ -130,7 +150,7 @@ function GFCSB_Bootstrap() {
                 <tr id="form_button_image_path_setting" class="child_setting_row" style="' . $image_style_display . '">
                     <th>
                             ' .
-                        __( 'Button image path', 'gf-custom-submit-button' ) . '  ' .
+                        __( 'Button image path', 'gravityforms' ) . '  ' .
                         gform_tooltip( 'form_button_image', '', true ) .
                         '
                     </th>
@@ -189,7 +209,7 @@ function GFCSB_Bootstrap() {
             }
 
             public function add_tooltips( $tooltips ) {
-                $tooltips['form_button_html_input'] = '<h6>' . __( 'Form HTML Button Text', 'gf-custom-submit-button' ) . '</h6>' . __( 'Enter the text you would like to appear on the form submit button. HTML tags are allowed.', 'gf-custom-submit-button' );
+                $tooltips['form_button_html_input'] = '<h6>' . __( 'Form Button Element Text', 'gf-custom-submit-button' ) . '</h6>' . __( 'Enter the text you would like to appear on the form submit button element. HTML tags are allowed.', 'gf-custom-submit-button' );
                 $tooltips['button_css_class'] = '<h6>' . __( 'Form Button CSS Classes', 'gf-custom-submit-button' ) . '</h6>' . __( 'These are the CSS classes that are attached to the form submit button. You can change or overwrite them here.', 'gf-custom-submit-button' );
                 return $tooltips;
             }
