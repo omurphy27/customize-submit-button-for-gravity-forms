@@ -1,7 +1,7 @@
 <?php 
 /**
  * Plugin Name: Customize Submit Button for Gravity Forms
- * Description: Lets you customize the submit button in Gravity Forms by switching it to a button element, adding HTML inside said button element and changing its CSS classes 
+ * Description: Lets you customize the submit button in Gravity Forms by switching it to a button element and changing its CSS classes
  * Version: 1.0.0
  * Author: Ollie Murphy
  * Author URI: https://github.com/omurphy27
