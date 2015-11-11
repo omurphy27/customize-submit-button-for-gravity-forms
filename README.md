@@ -25,7 +25,7 @@ Installing this plugin automatically is the easiest option. You can install the 
 
 ## Manual Installation
 
-To manually install the plugin you'll need to [download the plugin](https://wordpress.org/plugins/woo-change-product-author/) to your computer and upload it to your server via FTP or another method. The plugin needs to be extracted in the `wp-content/plugins` folder. Once done you should be able to activate it as usual.
+To manually install the plugin you'll need to download the plugin to your computer and upload it to your server via FTP or another method. The plugin needs to be extracted in the `wp-content/plugins` folder. Once done you should be able to activate it as usual.
 
 If you are having trouble, take a look at the [Managing Plugins](http://codex.wordpress.org/Managing_Plugins#Manual_Plugin_Installation) section in the WordPress Codex, it has more information on this topic.
 
