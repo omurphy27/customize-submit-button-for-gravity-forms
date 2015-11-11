@@ -19,13 +19,13 @@ add_action('gform_loaded', 'GFCSB_Bootstrap', 5);
 
 function GFCSB_Bootstrap() {
 
-    if (class_exists("GFForms")) {
+    if ( class_exists("GFForms") ) {
 
     	GFForms::include_addon_framework();
 
     	Class GFCustomSubmitButton extends GFAddOn {
     		protected $_version = '1.0'; 
-            protected $_min_gravityforms_version = '1.9.12';
+            protected $_min_gravityforms_version = '1.9.12.16';
             protected $_slug = 'gf-custom-submit-button';
             protected $_path = 'gf-custom-submit-button/gf-custom-submit-button.php';
             protected $_full_path = __FILE__;
@@ -34,20 +34,25 @@ function GFCSB_Bootstrap() {
 
             public function init() {  
                 parent::init();            
+
+                // fire upon plugin deactivation
                 register_deactivation_hook( __FILE__, array( $this, 'gfcsb_deactivate' ) );
             }
 
             public function gfcsb_deactivate() {
 
-                // fetch all forms
-                $forms = GFFormsModel::get_forms();
+                if ( class_exists("GFFormsModel") ) {
+                    
+                    // fetch all forms
+                    $forms = GFFormsModel::get_forms();
 
-                // update button type to 'text' default if 'html' value is still selected when deactivated
-                foreach ( $forms as $form ) {
-                    $form_meta = GFFormsModel::get_form_meta( $form->id );
-                    if ( $form_meta['button']['type'] == 'html' ) {
-                        $form_meta['button']['type'] = 'text';
-                        GFFormsModel::update_form_meta( $form->id, $form_meta);
+                    // update button type to 'text' default if 'html' value is still selected when deactivated
+                    foreach ( $forms as $form ) {
+                        $form_meta = GFFormsModel::get_form_meta( $form->id );
+                        if ( $form_meta['button']['type'] == 'html' ) {
+                            $form_meta['button']['type'] = 'text';
+                            GFFormsModel::update_form_meta( $form->id, $form_meta);
+                        }
                     }
                 }
             }
@@ -254,6 +259,7 @@ function GFCSB_Bootstrap() {
                     $button_input .= $text . "</button>";
                 }
 
+                // change button css classes if needed
                 if ( isset( $form['button']['button_css_class'] ) ) {
                     $button_css = $form['button']['button_css_class'];
                     if ( !empty( $button_css ) ) {
@@ -266,13 +272,14 @@ function GFCSB_Bootstrap() {
 
             public function init_frontend() {
                 
+                // filter front end form markup
                 add_filter( 'gform_submit_button', array( $this, 'filter_form_button_markup' ), 20, 3 );
             }
 
     	}
 
+        // initialize main plugin class
     	$GF_Custom_Submit_Button = new GFCustomSubmitButton();
-
     }
 }
 
