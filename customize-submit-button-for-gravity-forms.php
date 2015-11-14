@@ -5,7 +5,7 @@
  * Version: 1.0.0
  * Author: Ollie Murphy
  * Author URI: https://github.com/omurphy27
- * Text Domain: gf-custom-submit-button
+ * Text Domain: customize-submit-button-for-gravity-forms
  *
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,8 +26,8 @@ function GFCSB_Bootstrap() {
     	Class GFCustomSubmitButton extends GFAddOn {
     		protected $_version = '1.0'; 
             protected $_min_gravityforms_version = '1.9.12.16';
-            protected $_slug = 'gf-custom-submit-button';
-            protected $_path = 'gf-custom-submit-button/gf-custom-submit-button.php';
+            protected $_slug = 'customize-submit-button-for-gravity-forms';
+            protected $_path = 'customize-submit-button-for-gravity-forms/customize-submit-button-for-gravity-forms.php';
             protected $_full_path = __FILE__;
             protected $_title = 'Customize Submit Button for Gravity Forms';
             protected $_short_title = 'GF Custom Submit Button';
@@ -131,7 +131,7 @@ function GFCSB_Bootstrap() {
                     &nbsp;&nbsp;
                     <input type="radio" id="form_button_html" name="form_button" value="html" onclick="GFSBToggleButton();" ' . $html_button_checked . ' />
                     <label for="form_button_html" class="inline">' .
-                    __( 'Button', 'gf-custom-submit-button' ) . '</label>
+                    __( 'Button', 'customize-submit-button-for-gravity-forms' ) . '</label>
 
                     </td>
                 </tr>';
@@ -166,7 +166,7 @@ function GFCSB_Bootstrap() {
                 <tr id="form_button_html_setting" class="child_setting_row" style="' . $html_style_display . '">
                     <th>
                         <label for="form_button_html_input" style="display:block;">' . 
-                            __( 'HTML Button Text', 'gf-custom-submit-button' ) . ' ' .
+                            __( 'HTML Button Text', 'customize-submit-button-for-gravity-forms' ) . ' ' .
                             gform_tooltip( 'form_button_html_input', '', true ) .
                         '</label>
                     </th>
@@ -180,7 +180,7 @@ function GFCSB_Bootstrap() {
                 <tr>
                     <th>
                         <label for="button_css_class" style="display:block;">' .
-                    __( 'Submit Button CSS Classes', 'gf-custom-submit-button' ) . ' ' .
+                    __( 'Submit Button CSS Classes', 'customize-submit-button-for-gravity-forms' ) . ' ' .
                     gform_tooltip( 'button_css_class', '', true ) .
                     '</label>
                 </th>
@@ -214,8 +214,8 @@ function GFCSB_Bootstrap() {
             }
 
             public function add_tooltips( $tooltips ) {
-                $tooltips['form_button_html_input'] = '<h6>' . __( 'Form Button Element Text', 'gf-custom-submit-button' ) . '</h6>' . __( 'Enter the text you would like to appear on the form submit button element. HTML tags are allowed.', 'gf-custom-submit-button' );
-                $tooltips['button_css_class'] = '<h6>' . __( 'Form Button CSS Classes', 'gf-custom-submit-button' ) . '</h6>' . __( 'These are the CSS classes that are attached to the form submit button. You can change or overwrite them here.', 'gf-custom-submit-button' );
+                $tooltips['form_button_html_input'] = '<h6>' . __( 'Form Button Element Text', 'customize-submit-button-for-gravity-forms' ) . '</h6>' . __( 'Enter the text you would like to appear on the form submit button element. HTML tags are allowed.', 'customize-submit-button-for-gravity-forms' );
+                $tooltips['button_css_class'] = '<h6>' . __( 'Form Button CSS Classes', 'customize-submit-button-for-gravity-forms' ) . '</h6>' . __( 'These are the CSS classes that are attached to the form submit button. You can change or overwrite them here.', 'customize-submit-button-for-gravity-forms' );
                 return $tooltips;
             }
 
