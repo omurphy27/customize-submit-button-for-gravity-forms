@@ -6,6 +6,7 @@
 - License URI: http://www.gnu.org/licenses/gpl-2.0.html
 - Gravity Forms requires at least: 1.9.12.16
 - Gravity Forms tested up to: 1.9.14.19
+- Download at [Wordpress.org](https://wordpress.org/plugins/customize-submit-button-for-gravity-forms/)
 
 Wordpress plugin that lets you customize the submit button in Gravity Forms by switching it to a button element and changing its CSS classes
 
